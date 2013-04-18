@@ -49,7 +49,7 @@ module GitPivotalTracker
     end
 
     def story_id
-      if current_branch =~ /-(\d+)-/
+      if current_branch =~ /-(\d{7,})(-.*)?$/
         $1
       end
     end

@@ -2,12 +2,13 @@
 # vim: set syntax=ruby
 
 branch = `git branch 2> /dev/null | grep -e ^* | awk '{print $2}'`
-if branch =~ /-(\d{7,})-/
+if branch =~ /-(\d{7,})(-.*)?$/
+  story_id = $1
   commit_msg = IO.read(ARGV[0])
-  unless commit_msg.include?($1)
+  unless commit_msg =~ /\[.*#{story_id}\]/
     File.open(ARGV[0], 'w') do |file|
+      file.print "\n\n[delivers ##{story_id}]\n"
       file.print commit_msg
-      file.print "[##{$1}]"
     end
   end
 end

@@ -25,11 +25,11 @@ module GitPivotalTracker
       puts "URL:   #{story.url}"
       puts "Story: #{story.name}"
 
-      print "Enter branch name [#{branch_suffix story}]: "
-      suffix = STDIN.gets.chomp
-      suffix = branch_suffix(story) if suffix == ""
+      print "Enter branch prefix [#{default_branch_prefix story}]: "
+      prefix = STDIN.gets.chomp
+      prefix = default_branch_prefix(story) if prefix == ""
 
-      branch = "#{story.story_type}-#{story.id}-#{suffix}"
+      branch = "#{prefix}-#{story.id}"
       puts "Checking out a new branch '#{branch}'"
       log repository.git.checkout({:b => true, :raise => true}, branch)
 
@@ -60,7 +60,7 @@ module GitPivotalTracker
       project.stories.all(conditions)
     end
 
-    def branch_suffix(story)
+    def default_branch_prefix(story)
       story.name.sub(/^\W+/, '').sub(/\W+$/, '').gsub(/\W+/, '_').downcase
     end
   end
