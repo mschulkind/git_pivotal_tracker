@@ -21,14 +21,18 @@ module GitPivotalTracker
 
       merge_options = {:raise => true}
       if options[:fast_forward]
-        merge_options[:no_ff] = true
-      else
         merge_options[:ff_only] = true
+      else
+        merge_options[:no_ff] = true
       end
       log repository.git.merge(merge_options, current_branch)
 
       puts "Pushing #{integration_branch}"
       log repository.git.push({:raise => true}, 'origin', integration_branch)
+      
+      delete_current_branch if options[:delete_branch]
+      puts "Success"
+      return 0
     rescue Grit::Git::CommandFailed => e
       puts "git error: #{e.err}"
       return 1
