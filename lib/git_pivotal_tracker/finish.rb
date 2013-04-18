@@ -20,21 +20,15 @@ module GitPivotalTracker
       log repository.git.checkout({:raise => true}, integration_branch)
 
       merge_options = {:raise => true}
-      merge_options[:no_ff] = true unless options[:fast_forward]
+      if options[:fast_forward]
+        merge_options[:no_ff] = true
+      else
+        merge_options[:ff_only] = true
+      end
       log repository.git.merge(merge_options, current_branch)
 
       puts "Pushing #{integration_branch}"
       log repository.git.push({:raise => true}, 'origin', integration_branch)
-
-      puts "Marking Story #{story_id} as finished..."
-      if story.update(:current_state => finished_state)
-        delete_current_branch if options[:delete_branch]
-        puts "Success"
-        return 0
-      else
-        puts "Unable to mark Story #{story_id} as finished"
-        return 1
-      end
     rescue Grit::Git::CommandFailed => e
       puts "git error: #{e.err}"
       return 1
